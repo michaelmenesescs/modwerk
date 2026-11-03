@@ -13,67 +13,70 @@
   },
   "nativeManifest": "manifest.py",
   "presentation": {
-    "label": "FILTER",
-    "family": "Filter",
-    "summary": "Describe the module and its sound.",
-    "overview": "Explain its signal path and practical uses.",
+    "label": "DELAY",
+    "family": "Resonator",
+    "summary": "Four tuned combs on a chord turn a hit or a noise burst into a ringing chord.",
+    "overview": "A resonator insert: the track's audio excites four feedback combs whose pitches form a chord. Short decays give a metallic ring on hats and percussion; long decays make dub stabs out of single hits, and FREEZE holds the chord as a drone.",
     "highlights": [
-      "Describe an actual feature."
+      "15 chords plus USER (any three intervals).",
+      "Seven voicings, from close to wide.",
+      "Decay up to 20 seconds with every note ringing for the same time.",
+      "FREEZE holds the rings losslessly."
     ],
     "usage": [
-      "Explain where to find it and a useful starting point."
+      "Choose RESO in FX2, set TUNE and DCAY, then push MIX up. Feed it a short hit or noise for a chord stab."
     ]
   },
   "controls": [
-    {
-      "name": "P0",
-      "default": 64,
-      "count": 128,
-      "doc": "Explain what this control does, including limits and interactions.",
-      "labels": null
-    },
-    {
-      "name": "P1",
-      "default": 0,
-      "count": 128,
-      "doc": "Explain the second control.",
-      "labels": null
-    }
+    { "name": "TUNE", "default": 14, "count": 60, "doc": "Root note C2..B6.", "labels": ["C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5", "A#5", "B5", "C6", "C#6", "D6", "D#6", "E6", "F6", "F#6", "G6", "G#6", "A6", "A#6", "B6"] },
+    { "name": "DCAY", "default": 90, "count": 128, "doc": "Ring time: 50 ms at 0 to 20 s at 127, the same for every note.", "labels": null },
+    { "name": "BRIT", "default": 80, "count": 128, "doc": "Damping: 127 keeps the highs; lower values make high notes die sooner.", "labels": null },
+    { "name": "SPRD", "default": 64, "count": 128, "doc": "Stereo spread of the four voices, centre to wide.", "labels": null },
+    { "name": "DRIV", "default": 0, "count": 128, "doc": "Drive into the rings; high values reach the ring clip for industrial tones.", "labels": null },
+    { "name": "MIX", "default": 0, "count": 128, "doc": "Dry/wet; 0 is an exact passthrough, 127 fully wet.", "labels": null },
+    { "name": "CHRD", "default": 11, "count": 15, "doc": "Chord the voices ring at; USER takes INT2..INT4.", "labels": ["USER", "OCT", "5TH", "MIN", "MAJ", "MIN7", "MAJ7", "DOM7", "MIN9", "SUS2", "SUS4", "DUB", "MI11", "QRTL", "CLST"] },
+    { "name": "VOIC", "default": 0, "count": 7, "doc": "Voicing: close, three inversions, drop-2, open or wide.", "labels": ["CLSE", "INV1", "INV2", "INV3", "DRP2", "OPEN", "WIDE"] },
+    { "name": "INT2", "default": 27, "count": 49, "doc": "USER chord: second voice, -24..+24 semitones.", "labels": null },
+    { "name": "INT3", "default": 31, "count": 49, "doc": "USER chord: third voice, -24..+24 semitones.", "labels": null },
+    { "name": "INT4", "default": 34, "count": 49, "doc": "USER chord: fourth voice, -24..+24 semitones.", "labels": null },
+    { "name": "FREZ", "default": 0, "count": 2, "doc": "Freeze: closes the input and holds the rings.", "labels": ["OFF", "ON"] }
   ],
   "compatibility": {
     "firmware": "1.40C",
-    "location": "FX1",
+    "location": "FX2",
     "conflicts": [],
     "uiClaims": [],
     "limitations": [
-      "Scaffold only; audio behavior and hardware operation have not been tested."
+      "FX2 only: the four rings need 8,192 words, more than an FX1 slot offers.",
+      "Not tested on hardware; the engine is verified in dsp56kEmu only.",
+      "The four rings stop short of Sidechain Compressor's key window."
     ],
-    "effectId": 10
+    "effectId": 7
   },
   "resources": {
-    "recorded": "Not measured",
+    "recorded": "Emulator, 2026-11-02",
     "storage": {
       "label": "Storage",
-      "display": "Not measured",
-      "value": null,
-      "unit": "unknown",
-      "method": "unmeasured",
-      "conditions": "No measurements exist yet. Add exact conditions and source evidence when available.",
+      "display": "8,192 words",
+      "value": 8192,
+      "unit": "words",
+      "method": "declared buffer claim",
+      "conditions": "Four 2,048-word rings in the FX2 instance buffer.",
       "source": "TESTING.md"
     },
     "processing": {
       "label": "CPU / DSP load",
-      "display": "Not measured",
-      "value": null,
-      "unit": "unknown",
-      "method": "unmeasured",
-      "conditions": "No measurements exist yet. Add exact conditions and source evidence when available.",
+      "display": "236 instr/frame",
+      "value": 236,
+      "unit": "instructions per frame",
+      "method": "emulator instruction count",
+      "conditions": "Steady state, four voices, emulator instruction count, not chip cycles.",
       "source": "TESTING.md"
     }
   },
   "tests": {
     "report": "TESTING.md",
-    "summary": "No tests have been run. Add tests.qualification with worst-case cycles, exact memory and attributed owner-reviewed hardware evidence before submitting. This scaffold cannot pass publication checks.",
+    "summary": "Emulator only: tuning, decay, freeze, dry path and silence pass; no hardware report yet.",
     "hardwareStatus": "untested",
     "evidenceRevision": "b8deefc88b2c3e5f3c6158e364eb741df1924e1d",
     "gates": [
@@ -85,13 +88,15 @@
   "license": {
     "spdx": "MIT",
     "file": "LICENSE",
-    "declaration": "Replace with accurate authorship, attribution and original/licensed source and media rights. Never include Elektron firmware, extracted routines or tables."
+    "declaration": "Original design and source by michaelmenesescs, MIT. Built on published techniques (feedback comb / Karplus-Strong resonators, Thiran allpass interpolation, Jot-style T60 loop gain). No Elektron firmware, routines or tables."
   },
   "media": [],
   "access": {
-    "location": "Describe the exact OT page or menu where the module is selected or enabled.",
+    "location": "FX2 of any audio track.",
     "steps": [
-      "Describe prerequisites, track/machine selection and the exact button/menu sequence."
+      "Select an audio track, open its FX2 slot and choose RESO from the effect list.",
+      "Press YES, set TUNE and DCAY, then raise MIX.",
+      "Hold the effect key to reach page 2 for CHRD, VOIC, INT2..INT4 and FREZ."
     ],
     "screenshots": []
   }
