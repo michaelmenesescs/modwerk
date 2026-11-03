@@ -43,7 +43,7 @@ const { values: args } = parseArgs({ options: {
   controllers: { type: 'boolean', default: false }, 'usb-audio-variants': { type: 'boolean', default: false },
   'cached-modules': { type: 'boolean', default: false },
   'module-sets': { type: 'boolean', default: false }, 'sample-editor': { type: 'boolean', default: false },
-  beta: { type: 'boolean', default: false },
+  beta: { type: 'boolean', default: false }, dev: { type: 'boolean', default: false },
 } })
 if (!args.stock) throw new Error('Usage: npm run octatrack:base -- --stock OCTATRACK_OS1.40C.bin [--beta] [--upstream ELEKLOADER] [--write] [--out NEW-DIR]')
 // The beta base's flags. A regeneration that spelled them out by hand dropped --cached-modules once (20 October 2026),
@@ -69,10 +69,12 @@ const same = (fresh, path) => {
   else assert(existsSync(path) && fresh.equals(readFileSync(path)), path + ' is not what this source builds: run with --write and commit it.')
 }
 
+if (args.dev && args.beta) throw new Error('--dev is the development base; --beta is the tester base.')
 if (args['resident-on-demand'] && !args['resident-stock-hooks']) throw new Error('--resident-on-demand needs --resident-stock-hooks.')
 if (args['resident-stock-hooks'] && !args['resident-on-demand']) throw new Error('--resident-stock-hooks needs --resident-on-demand: Analog BD’s engine is its package’s.')
 const work = mkdtempSync(join(tmpdir(), 'modwerk-base-')), core = join(work, 'core')
 const buildLayout = (layout, output, ...rest) => python('build_core.py', '--stock', args.stock, '--upstream', args.upstream, '--output', output, '--dsp-loader',
+  ...(args.dev ? ['--dev'] : []),
   ...(args['usb-midi'] ? ['--usb-midi'] : []), ...(layout ? ['--usb-audio', layout] : []),
   ...(args['site-events'] ? ['--site-events'] : []), ...(args['cached-modules'] ? ['--cached-modules'] : []),
   ...(args['table-owners'] ? ['--table-owners', join(adapters, 'table-owners.json')] : []),
